@@ -29,3 +29,18 @@ services:
     volumes:
       - "./loki/loki.yaml:/etc/loki/loki.yaml"
     command: ["--pattern-ingester.enabled=true", "-config.file=/etc/loki/loki.yaml"]
+
+  # The Grafana dashboarding server.
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - "./grafana/definitions:/var/lib/grafana/dashboards"
+      - "./grafana/provisioning:/etc/grafana/provisioning"
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_FEATURE_TOGGLES_ENABLE=flameGraph traceqlSearch traceQLStreaming correlations metricsSummary traceqlEditor traceToMetrics traceToProfiles datatrails
+      - GF_INSTALL_PLUGINS=grafana-lokiexplore-app,grafana-exploretraces-app,grafana-pyroscope-app
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
