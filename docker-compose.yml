@@ -3,7 +3,7 @@ services:
   # auto-logs from those traces.
   # Includes Metrics, Logs, Traces and Profiles.
   alloy:
-    image: grafana/alloy:v1.8.1
+    image: grafana/alloy:latest
     ports:
       - "12347:12345"
       - "12348:12348"
@@ -23,7 +23,7 @@ services:
   # The Loki service stores logs sent to it, and takes queries from Grafana
   # to visualise those logs.
   loki:
-    image: grafana/loki:3.4.1
+    image: grafana/loki:latest
     ports:
       - "3100:3100"
     volumes:
