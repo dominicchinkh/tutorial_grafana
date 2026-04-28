@@ -1,0 +1,31 @@
+services:
+  # Grafana Alloy batches and processes traces sent to it, generating
+  # auto-logs from those traces.
+  # Includes Metrics, Logs, Traces and Profiles.
+  alloy:
+    image: grafana/alloy:v1.8.1
+    ports:
+      - "12347:12345"
+      - "12348:12348"
+      - "6832:6832"
+      - "55679:55679"
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./alloy:/etc/alloy
+    command: [
+      "run",
+      "--server.http.listen-addr=0.0.0.0:12345",
+      "--stability.level=experimental",
+      "/etc/alloy/config.alloy",
+    ]
+
+  # The Loki service stores logs sent to it, and takes queries from Grafana
+  # to visualise those logs.
+  loki:
+    image: grafana/loki:3.4.1
+    ports:
+      - "3100:3100"
+    volumes:
+      - "./loki/loki.yaml:/etc/loki/loki.yaml"
+    command: ["--pattern-ingester.enabled=true", "-config.file=/etc/loki/loki.yaml"]
