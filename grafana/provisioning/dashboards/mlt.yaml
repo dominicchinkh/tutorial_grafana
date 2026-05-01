@@ -1,5 +1,17 @@
 apiVersion: 1
 
+# https://github.com/grafana/grafana/blob/main/docs/sources/administration/provisioning/index.md#dashboards
+
+#  + You can manage dashboards in Grafana by adding one or more YAML configuration files in the provisioning/dashboards 
+#    directory. Each configuration file contains a list of providers that Grafana uses to load dashboards from the local 
+#    filesystem.
+#  + When Grafana starts, it updates or creates all dashboards found in the configured path. Grafana installs dashboards 
+#    at the root level if you don't set the folder field. After Grafana provisions your dashboards, it checks the filesystem 
+#    for changes and updates dashboards as needed.
+#  + The mechanism Grafana uses to do this depends on your updateIntervalSeconds value:
+#      More than 10 seconds: Grafana polls the path at that interval.
+#      10 seconds or less: Grafana watches the filesystem for changes and updates dashboards when it detects them.
+
 providers:
 - name: 'MLT'
   orgId: 1

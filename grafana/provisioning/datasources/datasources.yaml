@@ -1,5 +1,6 @@
 apiVersion: 1
 
+# https://github.com/grafana/grafana/blob/main/docs/sources/administration/provisioning/index.md#data-sources
 datasources:
   - name: Loki
     type: loki
