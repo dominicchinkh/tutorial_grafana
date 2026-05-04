@@ -19,6 +19,8 @@ services:
       "--stability.level=experimental",
       "/etc/alloy/config.alloy",
     ]
+    networks:
+      - znet
 
   # The Loki service stores logs sent to it, and takes queries from Grafana
   # to visualise those logs.
@@ -29,6 +31,8 @@ services:
     volumes:
       - "./loki/loki.yaml:/etc/loki/loki.yaml"
     command: ["--pattern-ingester.enabled=true", "-config.file=/etc/loki/loki.yaml"]
+    networks:
+      - znet
 
   # The Grafana dashboarding server.
   grafana:
@@ -44,3 +48,57 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
+    networks:
+      - znet
+
+  apache:
+    container_name: apache
+    hostname: apache
+    image: httpd:2.4
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./symfony:/var/www/symfony
+    depends_on:
+      - symfony
+    networks:
+      - znet
+
+  symfony:
+    container_name: symfony
+    hostname: symfony
+    depends_on:
+      postgresql:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: ./docker/symfony/Dockerfile
+    volumes:
+        - ./symfony:/var/www/symfony:rw
+    networks:
+      - znet
+
+  postgresql:
+    container_name: postgresql
+    hostname: postgresql
+    image: postgis/postgis:17-master
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=symfony
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:rw
+    ports:
+      - "5432:5432"
+    networks:
+      - znet
+
+volumes:
+  postgres-data:
+
+networks:
+  znet:
+    ipam:
+      config:
+        - subnet: 192.168.39.0/24
